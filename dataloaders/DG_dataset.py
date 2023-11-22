@@ -63,10 +63,10 @@ class DG_Dataset(Dataset):
             self.items = open(self.test_list_path).read().splitlines()
         else:
             self.items = []
-        
+
         if print_info:
             self._display_infos()
-    
+
     def _display_infos(self):
         print(f'=> Dataset {self.__class__.__name__} loaded')
         print(f'=> Split {self.split}')
@@ -114,14 +114,10 @@ class DG_Dataset(Dataset):
         return img_path, label, img, depth, res
 
     def _convert_to_depth(self,img_path):
-        if 'replayattack' in img_path:
-            depth_path = img_path.replace('replayattack','replayattack_depth')
-        elif 'CASIA_database' in img_path:
-            depth_path = img_path.replace('CASIA_database','CASIA_database_depth')
-        elif 'MSU-MFSD' in img_path:
-            depth_path = img_path.replace('MSU-MFSD','MSU-MFSD_depth')
-        elif 'Oulu_NPU' in img_path:
-            depth_path = img_path.replace('Oulu_NPU','Oulu_NPU_depth')
+        for ds_name in ["replay-attack", "casia-fasd", "msu-mfsd", "oulu-npu"]:
+            if ds_name in img_path:
+                depth_path = img_path.replace(ds_name, f"{ds_name}/depth")
+                break
 
         return depth_path
 
@@ -167,9 +163,11 @@ class DG_Dataset(Dataset):
         length = len(items)
         index = index % length
 
-        res = items[index].split(' ')
-        img_path = res[0]
-        label = int(res[1])
+        res = items[index].split(',')
+        img_path = res[1]
+        img_name = img_path.split('/')[-1]
+        img_path += f"/{img_name}_0.jpg"  # take first frame
+        label = int(res[0])
         depth_path = self._convert_to_depth(img_path)
 
         # get image from LMDB
