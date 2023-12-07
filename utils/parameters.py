@@ -5,7 +5,7 @@ from omegaconf import OmegaConf
 
 def get_parameters():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type=str, default='configs/ICM2O.yaml')
+    parser.add_argument('-c', '--config', type=str, default='configs/IOM2C.yaml')
     parser.add_argument('--distributed', type=int, default=1)
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--world_size', type=int, default=1)
